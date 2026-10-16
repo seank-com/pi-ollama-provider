@@ -80,6 +80,14 @@ PI_CODING_AGENT_PACKAGE=/path/to/pi-coding-agent npm test
 PI_CODING_AGENT_PACKAGE=/path/to/pi-coding-agent npm run test:package
 ```
 
+To keep private terms and secrets out of commits, run `npm run hooks:install`
+once per clone. Commits and pushes are then refused when an added line or a
+commit message contains a line of `~/.pii` (one term per line, matched
+case-insensitively; `#` lines are comments) or a value of 8 or more characters
+from `~/.env`. `PRIVATE_TERMS_FILE` and `PRIVATE_SECRETS_FILE` select other
+files. `npm run check:private -- --all` checks every staged file, including
+unchanged ones.
+
 Integration installs the owner tarball under a separate module root and tests
 both load orders, redaction/tool-call retry/auditing, hook failures, teardown, strict
 real-host inference, and the selected host’s strict compaction behavior. Only compiled JS/declarations,
