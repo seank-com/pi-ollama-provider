@@ -93,7 +93,11 @@ Overflow messages preserve the phrase recognized by the selected Pi host.
 
 HTTP redirects are manual refusals and never followed. Metadata bodies are
 bounded at 4 MiB, error bodies at 64 KiB, and decoded stream lines at
-8 * 1024 * 1024 code units. The configured idle watchdog starts before fetch,
+8 * 1024 * 1024 code units. These bounds are memory safeguards, not fitted
+values: observed local Ollama responses (model metadata, error bodies,
+NDJSON stream lines) are hundreds of bytes to a few kilobytes, so each cap
+leaves roughly three orders of magnitude of headroom for model and context
+growth. The configured idle watchdog starts before fetch,
 covers model load/queueing and response gaps, and resets on byte arrival.
 Pi's own HTTP header/body timeout can also fire and remains separately classified.
 Parent cancellation aborts fetch, cancels owned readers, and retires pending
