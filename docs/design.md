@@ -134,6 +134,10 @@ strict policy readiness with injected fixtures. Real host checks pin transcript 
 schemas, overflow recognition, and event consumers. Packed standalone tests use
 real Pi tools and compaction with no observability installation. Explicit packed
 composition tests use separate module roots and the actual owner, both load
-orders, redaction/tool-call retry/auditing, teardown, and strict compaction behavior.
-Historical policy/campaign harnesses remain private composition evidence; they
-are not copied into this package or required for its isolated default suite.
+orders, processed-payload egress, owner-requested recovery through the provider,
+teardown, and strict compaction behavior. These checks verify the provider's
+handoff through public contracts, not observability's intent acceptance rules or
+rejection classifications. Injected capability fixtures fail if the provider
+invokes owner sanitization or recovery-payload operations. Observability owns
+its policy tests; private assembly tests own the full selected-component
+composition and execution-gating scenarios.

@@ -1,17 +1,10 @@
 import type { IntentSanitizer, ObservabilityPolicy } from "../../src/observability.ts";
 
-// Exact synthetic responses from an injected policy. The owner's sanitizer
-// implementation and its comprehensive tests stay in the owning component.
-const rejections = new Map([
-  ["Find files matching `**/*.ts`.", "shell_syntax"],
-  ["Read the file at /srv/app/config.json.", "path"],
-  ["Search with --ignore-case for handlers.", "option"],
-]);
-export const fixtureSanitize: IntentSanitizer = value => {
-  if (typeof value !== "string") return {ok:false,reason:"invalid_type"};
-  const reason = rejections.get(value);
-  return reason ? {ok:false,reason} : {ok:true,value};
+// Provider tests inspect capability shape/readiness, not owner policy.
+// Calling either owner operation here is a provider-boundary regression.
+export const fixtureSanitize: IntentSanitizer = () => {
+  throw new Error("provider must not sanitize audit intent");
 };
 export function fixturePolicy(overrides: Partial<ObservabilityPolicy> = {}): ObservabilityPolicy {
-  return {version:1,ready:true,sanitizeIntent:fixtureSanitize,redactRecovery:body=>structuredClone(body),...overrides};
+  return {version:1,ready:true,sanitizeIntent:fixtureSanitize,redactRecovery:()=>{throw new Error("provider must not construct owner recovery payloads");},...overrides};
 }

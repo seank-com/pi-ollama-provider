@@ -37,10 +37,10 @@ test("strict inference and compaction preparation require a callback even with a
     assert.equal(result.sends,0);assert.match(result.message.errorMessage,/^PAYLOAD_HOOK_UNAVAILABLE/);
   }
 });
-test("strict valid policy and hook send once; policy revocation during a hook prevents egress",async()=>{
+test("strict capability and hook send once without invoking owner policy; revocation prevents egress",async()=>{
   const policy=fixturePolicy();let hooks=0;
   const valid=await run({mode:"require-observability",observability:()=>policy},{onPayload:()=>{hooks++;}});
-  assert.equal(valid.sends,1);assert.equal(hooks,1);
+  assert.equal(valid.sends,1);assert.equal(hooks,1);assert.equal(valid.terminal.type,"done");
   const revoked=await run({mode:"require-observability",observability:()=>policy},{onPayload:async()=>{(policy as any).ready=false;}});
   assert.equal(revoked.sends,0);assert.match(revoked.message.errorMessage,/^OBSERVABILITY_UNAVAILABLE/);
 });
