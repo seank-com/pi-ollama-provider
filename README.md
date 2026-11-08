@@ -89,7 +89,10 @@ files. `npm run check:private -- --all` checks every staged file, including
 unchanged ones.
 
 Integration installs the owner tarball under a separate module root and tests
-both load orders, redaction/tool-call retry/auditing, hook failures, teardown, strict
-real-host inference, and the selected host’s strict compaction behavior. Only compiled JS/declarations,
+both load orders, processed-payload forwarding, owner-requested recovery through
+the provider, hook failures, teardown, strict real-host inference, and the selected
+host's strict compaction behavior. Intent acceptance rules and rejection reasons
+are tested by observability, not duplicated here. Full selected-component
+composition belongs to the private assembly. Only compiled JS/declarations,
 generic docs, README, LICENSE, and package metadata ship. Public README/MIT
 history and extracted-code attribution are preserved.

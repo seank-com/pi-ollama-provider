@@ -91,14 +91,6 @@ try {
       const call=finalized.message.content[0];assert.equal(await fire(pair,"tool_call",{toolCallId:call.id,toolName:call.name,input:call.arguments}),undefined);
       assert.ok(entries.some(row=>row.customType==="tool-intent"&&row.data.toolCallId===call.id));
       assert.equal(JSON.stringify(entries).includes("packed-secret"),false);
-      // The actual owner's rejection leaves the call unaudited and blocked.
-      explanationText="Read the file at /srv/fixture/config.json.";
-      const rejected=await runPrepared({onPayload});assert.equal(rejected.stopReason,"toolUse");
-      const rejectedCall=rejected.content[0];assert.equal(Object.hasOwn(rejectedCall.arguments,"intent"),false);
-      await fire(pair,"message_end",{message:rejected});assert.equal((await fire(pair,"tool_call",{toolCallId:rejectedCall.id,toolName:rejectedCall.name,input:rejectedCall.arguments})).block,true);
-      assert.ok(!entries.some(row=>row.customType==="tool-intent"&&row.data.toolCallId===rejectedCall.id));
-      assert.ok(entries.some(row=>row.customType==="tool-intent-retry"&&row.data.reason==="intent_path"));
-      explanationText="Read the fixture file.";
       // Cancellation while the corrective call is pending retires all calls.
       explanationDelay=60_000;const controller=new AbortController();const priorRecovery=chats().length;
       ctx.signal=controller.signal;const cancelled=runPrepared({onPayload,signal:controller.signal}).then(message=>fire(pair,"message_end",{message}));const deadline=Date.now()+2000;
