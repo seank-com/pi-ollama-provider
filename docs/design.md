@@ -93,11 +93,10 @@ Overflow messages preserve the phrase recognized by the selected Pi host.
 
 HTTP redirects are manual refusals and never followed. Metadata bodies are
 bounded at 4 MiB, error bodies at 64 KiB, and decoded stream lines at
-8 * 1024 * 1024 code units. These bounds are memory safeguards, not fitted
-values: observed local Ollama responses (model metadata, error bodies,
-NDJSON stream lines) are hundreds of bytes to a few kilobytes, so each cap
-leaves roughly three orders of magnitude of headroom for model and context
-growth. The configured idle watchdog starts before fetch,
+8 * 1024 * 1024 code units. These are current transport/memory caps;
+measurement and explicit owner approval for the chosen values are not established
+by this design. Their presence is not retrospective justification. The configured
+idle watchdog starts before fetch,
 covers model load/queueing and response gaps, and resets on byte arrival.
 Pi's own HTTP header/body timeout can also fire and remains separately classified.
 Parent cancellation aborts fetch, cancels owned readers, and retires pending
@@ -119,6 +118,22 @@ and gates execution; failure leaves the held call blocked.
 The old recovery module and outcome constant are removed from this pre-release
 package. Rebuild companions together. Ordinary standalone tools still require
 no observability policy or intent.
+
+## Restrictions register
+
+Review this inventory in every PR against source, tests and selected host behavior.
+Values are current facts, not approval. Component/fixture maintainers own fixed
+values; project configuration owns documented overrides. Missing evidence stays
+explicit, and additional encountered restrictions must be surfaced in review.
+
+| Restriction | Why (what failure does it prevent) |
+| --- | --- |
+| Metadata timeout5000ms and stream-idle timeout900000ms by default; `timeouts.metadataMs`/`streamIdleMs` override. Location: `src/config.ts`, `src/client.ts`. | Abort configured metadata waits or gaps in response bytes, including load/queue time. Specific numeric necessity and owner approval are not established; platform HTTP deadlines remain separate. |
+| Config64KiB, metadata4MiB, error body64KiB and NDJSON line8388608 UTF-16 units. Location: `src/config.ts`, `src/client.ts`, `src/stream.ts`. | Rejects oversized input/response frames. This bounds accepted data; measurements and explicit approval supporting these values are not established. |
+| Error detail500 characters, unwrap depth3. Location: `src/errors.ts`; fixed component values. | Limits diagnostic rendering/traversal, potentially losing detail. The precise values' rationale and approval are not established. |
+| Protected strict configuration, exact origin/model validation, redirect refusal and capability/payload-callback gating in strict mode. Locations: configuration/client/extension code and modes above. | Enforces the described model/egress contract, not an inferred hostile same-account boundary. Existing filesystem modes, aliases and validation exclusions still need their specific approval evidence mapped; this table is not that authority. |
+| `scripts/test.ts` default child120000ms; package/integration outer60000ms; fixture pack/install/typecheck/probe30000ms; HTTP/stream cases10000 or20000ms. | These are current functional-test execution budgets and can fail slow runs. Test maintainers own them; explicit owner approval for these values is not established. No production timeout is selected by them. |
+| Publication registry rules in README and existing-branch `origin/main` exclusion; Git capture256MiB in `scripts/check-private-terms.ts`. | PR#6 is the approved main-history correction; new feature messages/lines and new-branch behavior remain checked. Separate capture cap approval/rationale is not established. Registry paths are configurable via PRIVATE_TERMS_FILE/PRIVATE_SECRETS_FILE. |
 
 ## Package and validation boundary
 
