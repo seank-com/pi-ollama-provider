@@ -90,6 +90,10 @@ unchanged. `PRIVATE_TERMS_FILE` and `PRIVATE_SECRETS_FILE` select other
 files. `npm run check:private -- --all` checks every staged file, including
 unchanged ones.
 
+Existing-branch pre-push scans exclude history already in the local `origin/main`
+tracking ref. Feature commit messages and added lines outside that baseline remain
+checked. New-branch scans still exclude all known remote history.
+
 Integration installs the owner tarball under a separate module root and tests
 both load orders, processed-payload forwarding, owner-requested recovery through
 the provider, hook failures, teardown, strict real-host inference, and the selected
